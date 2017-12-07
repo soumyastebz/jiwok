@@ -1,0 +1,55 @@
+SELECT IFNULL( c.brand_name, 'Jiwok' ) AS brand_name, if(sumstatus = 0,'Test First workout','Test 1 euro') AS Category, count( a.user_id ) AS Count
+FROM user_master_ext AS a
+LEFT JOIN brand_user b ON b.user_id = a.user_id
+LEFT JOIN brand_master c ON c.brand_master_id = b.brand_master_id
+LEFT JOIN countries d ON a.user_country = d.countries_id
+JOIN (	  
+SELECT payment_userid, payment_date, payment_amount, sumstatus FROM
+(
+(SELECT payment_userid, payment_date, payment_amount, sumstatus
+FROM (
+SELECT max( payment_date ) AS payment_date, payment_amount, sum( payment_status ) AS sumstatus, `payment_userid` AS payment_userid
+FROM payment
+WHERE payment_amount < 9.9
+AND payment_amount != 7.9
+GROUP BY payment_userid
+)tmp
+WHERE sumstatus =1
+)
+UNION (
+SELECT payment_userid, `invoke_time` , payment_amount, totalstatus
+FROM (
+
+SELECT `payment_userid` , min( `payment_date` ) AS payment_date, sum( `payment_status` ) AS totalstatus, `payment_amount`
+FROM `payment`
+GROUP BY `payment_userid`
+)t1
+LEFT JOIN (
+
+SELECT `user_id` , `invoke_time` , `status`
+FROM program_queue
+WHERE (
+
+STATUS =9
+OR STATUS =11
+)
+GROUP BY user_id
+ORDER BY invoke_time ASC
+)t2 ON t1.payment_userid = t2.user_id
+WHERE totalstatus =0
+AND invoke_time IS NOT NULL
+)
+) AS t4
+	  
+	  ) AS t5 ON a.user_id = t5.payment_userid
+WHERE payment_date BETWEEN '%3$s-%2$s-%1$s'  AND '%6$s-%5$s-%4$s'
+%7$s
+%8$s
+%9$s
+%10$s
+%11$s
+%12$s
+%13$s 
+%14$s 
+%15$s 
+GROUP BY brand_name, Category

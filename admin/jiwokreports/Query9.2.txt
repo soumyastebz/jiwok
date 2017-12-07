@@ -1,0 +1,36 @@
+SELECT IFNULL( d.countries_name,'') AS Country,num_months,
+count(a.user_id) as Users
+from user_master_ext a
+left join brand_user b on b.user_id=a.user_id 
+left join brand_master c on c.brand_master_id=b.brand_master_id 
+left join countries d on a.user_country=d.countries_id
+join 
+(
+SELECT user_id, first_payment_date, exp_date, num_months
+FROM (
+
+SELECT payment_userid AS user_id, min( payment_date ) AS first_payment_date, max( payment_expdate ) AS exp_date, PERIOD_DIFF( EXTRACT(
+YEAR_MONTH FROM max( payment_expdate ) ) , EXTRACT(
+YEAR_MONTH FROM min( payment_date ) ) ) AS num_months
+FROM payment p
+WHERE payment_status =1 group by payment_userid
+) as t1
+) as t2
+on t2.user_id = a.user_id
+WHERE user_type != ''
+%1$s
+%2$s
+%3$s
+%4$s
+%5$s
+%6$s
+%7$s
+%8$s
+%9$s 
+%10$s 
+%11$s
+GROUP BY Country,num_months
+ORDER BY Country
+
+
+

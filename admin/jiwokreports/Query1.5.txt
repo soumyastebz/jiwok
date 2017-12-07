@@ -1,0 +1,18 @@
+select  
+CASE origin
+WHEN '0 ' THEN  ''
+WHEN '1' THEN  '1Euro'
+WHEN '2' THEN  'Giftcode'
+WHEN '3' THEN  'FWT'
+WHEN '4' THEN  '7.9/9.9 trans'
+ELSE ''
+END  as Origin,count( a.user_id ) AS Users
+
+from user_master_ext a
+left join brand_user b on b.user_id=a.user_id 
+left join brand_master c on c.brand_master_id=b.brand_master_id 
+left join countries d on a.user_country=d.countries_id
+where a.user_doj BETWEEN '%3$s-%2$s-%1$s' and '%6$s-%5$s-%4$s' %7$s%8$s%9$s%10$s%11$s%12$s%13$s%14$s%15$s%16$s
+group by origin 
+
+order by origin;

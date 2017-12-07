@@ -1,0 +1,49 @@
+select  IFNULL(c.brand_name,'Jiwok') as Brand,d.countries_name as Country,
+count(a.user_id) as Count
+from user_master_ext a
+left join brand_user b on b.user_id=a.user_id 
+left join brand_master c on c.brand_master_id=b.brand_master_id 
+left join countries d on a.user_country=d.countries_id
+join
+
+(select user_id,newday from(
+
+SELECT user_id, Org_date, newday
+FROM (
+
+SELECT b.payment_userid AS user_id, b.payment_id, b.fpd, '1' AS Org, b.fpd AS Org_date, DATE_ADD( b.fpd, INTERVAL 31
+DAY ) AS newday
+FROM (
+
+SELECT payment_userid, min( payment_date ) AS fpd, payment_id, payment_amount
+FROM payment
+WHERE payment_status =1
+GROUP BY payment_userid
+)b
+WHERE (
+payment_amount < 9.9
+AND payment_amount != 7.9
+)
+)go, payment p
+WHERE p.payment_userid = go.user_id
+AND go.org_date < go.newday
+AND (
+p.payment_amount = 9.9
+OR p.payment_amount = 7.9
+)
+GROUP BY user_id) as t1) as tmp on tmp.user_id=a.user_id
+where a.user_type!=''
+and tmp.newday>='%3$s-%2$s-%1$s' and tmp.newday<'%6$s-%5$s-%4$s'
+%7$s
+%8$s
+%9$s
+%10$s
+%11$s
+%13$s
+%14$s
+%15$s
+%16$s
+
+GROUP BY brand_name,Country
+ORDER BY brand_name
+

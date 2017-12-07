@@ -1,0 +1,28 @@
+<?
+		   // Check forum admin
+/*		   $Getemail   = mysql_query("select user_email from user_master where user_id=".$_REQUEST['userId']);
+		   $emailvalue = mysql_fetch_assoc($Getemail);
+		   
+		$ForumAdmin = mysql_query("select user_type, user_id from forum_users where username='".$emailvalue['user_email']."'");
+		$Ckadmin    = mysql_fetch_assoc($ForumAdmin); 
+		
+			   if($Ckadmin['user_type'] != 3)
+			   {    
+			   		$dbObj->_deleteData('forum_posts', 'poster_id='.$Ckadmin['user_id']);  // delete forum posts
+			   		$dbObj->_deleteData('forum_users', 'username="'.$emailvalue['user_email'].'"'); // delete forum user
+			   }
+			   else
+			   {
+			   $errMsg = "You cannot delete the forum admin";
+			   }
+			// delete ticket user.   
+		   $SqlTicketid = mysql_query("select client_id from ticket_clients where email='".$emailvalue['user_email']."'");
+		   $ResTicketid = mysql_fetch_assoc($SqlTicketid); 
+		   		if($ResTicketid['client_id'] != '')
+		   		{
+			   		$dbObj->_deleteData('ticket_ticket_replies', 'reporter_id='.$ResTicketid['client_id']);  // delete ticket reply
+			   		$dbObj->_deleteData('ticket_tickets', 'client_id='.$ResTicketid['client_id']); // delete ticket
+			   		$dbObj->_deleteData('ticket_clients', 'client_id='.$ResTicketid['client_id']); // delete user
+				}	
+*/
+?>

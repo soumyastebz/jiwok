@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>cropit</title>
+    <script src="../dist/jquery.min.js"></script>
+    <script src="../dist/jquery.cropit.js"></script>
+  
+  
+    <style>
+
+      .cropit-image-preview {
+        background-color: #f8f8f8;
+        background-size: cover;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        margin-top: 7px;
+        width: 250px;
+        height: 250px;
+        cursor: move;
+        
+        
+      }
+
+      .cropit-image-background {
+        opacity: .2;
+        cursor: auto;
+      }
+
+      .image-size-label {
+        margin-top: 10px;
+      }
+
+      input {
+        display: block;
+      }
+
+      .export {
+        margin-top: 10px;
+      }
+   </style>
+   <script>
+   </script>
+  </head>
+  <body>
+	  <center>
+    <div  id="image-cropper" class="image-editor">
+     <div class="image-size-label">
+        Resize image
+      </div>
+      <div class="cropit-image-preview" style="height: 432px;width: 490px;"></div>
+      
+      <input type="range" class="cropit-image-zoom-input">
+       <div	style="width:50%"><span style="float:left"><input type="file"  class="cropit-image-input " ></span><span style="float:right">
+      <button  class="export ">Download cropped image</span></button>
+      </div>
+    </div>
+   
+      </center>
+    <script>
+      $(function() {
+        $('.image-editor').cropit({
+          imageState: {
+            src: '0-1920.jpg',
+          },
+        });
+
+        $('.export').click(function() {
+          var imageData = $('.image-editor').cropit('export');
+          window.open(imageData);
+        });
+      });
+    </script>
+  </body>
+</html>

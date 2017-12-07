@@ -1,0 +1,5 @@
+SELECT DISTINCT * FROM (SELECT payment_userid,payment_date,payment_amount,payment_status,(CASE WHEN payment_amount >= 9.9 OR payment_amount = 7.9 THEN 1 ELSE 0 END) AS `typen`,(CASE WHEN payment_amount < 9.9 AND payment_amount != 7.9 THEN 1 ELSE 0 END) AS `typem` FROM payment ) AS `rs` WHERE `rs`.`typen`=0 AND `rs`.payment_status=1
+
+
+
+SELECT user_id,program_flex_id,COUNT(program_flex_id) FROM program_queue GROUP BY user_id,program_flex_id

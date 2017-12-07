@@ -1,0 +1,9 @@
+SELECT um.user_id as user_id,count(um.user_id) as user_count,jiwok_code,camp_name,gift_card_no,date,cn.id as id
+FROM `campaign_reports` cr
+LEFT JOIN campaign_manage cn ON cr.jiwok_code = cn.camp_id
+left join user_master_ext um on um.user_id=cr.user_id
+where cr.status=1 and um.user_id is not null
+and date >= '2009-06-01'
+AND date <= '2011-12-30'
+AND gift_card_no = '6064791512878704'
+group by id

@@ -1,0 +1,31 @@
+SELECT CASE user_gender
+WHEN '0 '
+THEN 'Male'
+WHEN '1'
+THEN 'Female'
+ELSE ''
+END AS 'Gender', count( a.user_id ) AS Users
+from user_master_ext a
+left join brand_user b on b.user_id=a.user_id 
+left join brand_master c on c.brand_master_id=b.brand_master_id 
+left join countries d on a.user_country=d.countries_id
+join
+
+(SELECT t1.payment_userid as payment_userid,t1.payment_date as paymentdate,totalstatus FROM
+(
+select payment_userid,payment_date,payment_amount,sum(payment_status) as totalstatus from
+payment where payment_amount<9.9 and payment_amount!=7.9  group by payment_userid) as t1) as tmp on tmp.payment_userid=a.user_id where totalstatus=1
+
+and tmp.paymentdate BETWEEN '%3$s-%2$s-%1$s' and '%6$s-%5$s-%4$s'
+%7$s
+%8$s
+%9$s
+%10$s
+%11$s
+%13$s
+%14$s
+%15$s
+%16$s
+GROUP BY Gender
+ORDER BY Gender
+

@@ -1,0 +1,18 @@
+select  IFNULL(c.brand_name,'Jiwok') as Brand,
+CASE origin
+WHEN '0 ' THEN  ''
+WHEN '1' THEN  '1Euro'
+WHEN '2' THEN  'Giftcode'
+WHEN '3' THEN  'FWT'
+WHEN '4' THEN  '7.9/9.9 trans'
+ELSE ''
+END  as 'User Origin',
+count(a.user_id) as Count
+from user_master_ext a
+left join brand_user b on b.user_id=a.user_id 
+left join brand_master c on c.brand_master_id=b.brand_master_id 
+where a.user_doj>='%2$s-%1$s-01' and a.user_doj<'%4$s-%3$s-01'   
+AND origin>0
+group by brand_name,origin 
+
+order by brand_name;

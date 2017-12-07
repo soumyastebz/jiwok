@@ -1,0 +1,33 @@
+SELECT IFNULL( c.brand_name, 'Jiwok' ) AS brand_name, IF( `payment_date` >= '%3$s-%2$s-%1$s'
+AND `payment_date` < '%6$s-%5$s-%4$s', 'new', IF( `payment_date` < '%3$s-%2$s-%1$s', 'Existing', 'other' ) ) AS Category, count( a.user_id ) AS Count
+FROM user_master_ext AS a
+LEFT JOIN brand_user b ON b.user_id = a.user_id
+LEFT JOIN brand_master c ON c.brand_master_id = b.brand_master_id
+LEFT JOIN countries d ON a.user_country = d.countries_id
+JOIN (
+SELECT `payment_userid` AS payment_userid, `payment_date` AS payment_date
+FROM (
+SELECT `payment_userid` , `payment_date`
+FROM `payment`
+WHERE `payment_status` =1 AND `payment_date` IS NOT NULL
+GROUP BY `payment_userid`
+) AS t1
+) AS t2 ON t2.payment_userid = a.user_id
+WHERE (((`payment_date` BETWEEN '%3$s-%2$s-%1$s' AND '%6$s-%5$s-%4$s') 
+OR `payment_date` < '%3$s-%2$s-%1$s') 
+%7$s
+%8$s
+%9$s
+%10$s
+%11$s
+%12$s
+%13$s
+%14$s
+%15$s
+%16$s
+)
+GROUP BY brand_name, Category
+
+
+
+

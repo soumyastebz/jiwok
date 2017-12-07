@@ -1,0 +1,375 @@
+<?php
+/**************************************************************************** 
+   Project Name	::> Jiwok 
+   Module 		::> Admin-Brand Management
+   Programmer	::> Jasmin
+   Date			::> 5/04/2010
+   
+   DESCRIPTION::::>>>>
+   This  code userd to list the all brands .
+   Admin can add/edit/delete brads .. 
+*****************************************************************************/
+	include_once('includeconfig.php');
+	include("../includes/classes/class.testimonials.php");
+	include("../includes/classes/class.reseller.php");
+	include("../includes/classes/class.brand.php");
+	include("./movedir.php");
+				 
+	error_reporting(0);
+	
+	if($_REQUEST['langId'] != ""){
+		$lanId = $_REQUEST['langId'];
+	}
+	else{
+		$lanId = 1;
+	}
+	/*
+	Take all the languages to an array.
+	*/
+	$languageArray = $siteLanguagesConfig;
+	reset($languageArray);	
+	/*
+	 Instantiating the classes.
+	*/
+	$objTestimon	 = new Testimonial($lanId);
+	//$objTesti	 = new reseller($lanId);
+	$objGen  		 =	new General();
+	$objTesti  		 =	new BrandVersion();
+	
+	$heading = "Brands";
+			
+	//Sorting field decides here
+	if($_REQUEST['field']){
+		$field = $_REQUEST['field'];
+		$type = $_REQUEST['type'];
+	}else{
+		$field = "brand_name";
+		$type = "ASC";
+	}
+	//check whether the search keyword is existing
+	if(trim($_REQUEST['keyword'])){
+			$cleanData	=	str_replace("'","\\\\\\\\\\\'",trim($_REQUEST['keyword']));
+		$cleanData	=	str_replace("%"," ",trim($cleanData));
+		if(preg_match('/["%","$","#","^","!"]/',trim($_REQUEST['keyword']))){
+		$errMsg = "Special characters are not allowed";
+		}else{ 
+			$searchQuery	=	"brand_name  like '%".$cleanData."%'";}		
+	}
+	
+	//Confirmation message generates here
+	
+	if($_REQUEST['status'] == "success_add"){
+		$confMsg = "Successfully Added";
+	}
+	if($_REQUEST['status'] == "success_update"){
+		$confMsg = "Successfully Updated";
+	}
+
+	//Delete testimonial
+	if($_REQUEST['action'] == "delete"){
+		$id		 = $_REQUEST['masterId'];
+		echo $bname=$objTesti->_getRowById($id);
+	   $result	 = $objTesti->_deleteBrand($id);
+		if($result==false)
+		{
+		   $errMsg="The selected record is already in use, Cannot delete the record !";
+		}
+		else
+		{  
+		   $confMsg = "Successfully Deleted";
+		   if($bname)
+		   {
+		   $file="../templates/".$bname;
+		   delete_directory($file);
+		   }
+		}
+	}	
+
+	$totalRecs = $objTesti->_getTotalCount($searchQuery,$lanId);
+	if($totalRecs <= 0)
+		$errMsg = "No Records!";
+	
+	##############################################################################################################
+	/*                        Following Code is for doing paging                                                */
+	##############################################################################################################
+	
+	if(!$_REQUEST['maxrows'])
+		$_REQUEST['maxrows'] = $_POST['maxrows'];
+	if($_REQUEST['pageNo']){
+		if($_REQUEST['pageNo']*$_REQUEST['maxrows'] >= $totalRecs+$_REQUEST['maxrows']){
+			$_REQUEST['pageNo'] = 1;
+		}
+		$result =  $objTesti->_showPage($totalRecs,$_REQUEST['pageNo'],$_REQUEST['maxrows'],$field,$type,$searchQuery);
+	}
+	else{
+	/***********************Selects Records at initial stage***********************************************/
+		$_REQUEST['pageNo'] = 1;
+		$result = $objTesti->_showPage($totalRecs,$_REQUEST['pageNo'],$_REQUEST['maxrows'],$field,$type,$searchQuery);
+		
+		if(count($result) <= 0)
+			$errMsg = "No Records.";
+		}
+		
+	if($totalRecs <= $_REQUEST['pageNo']*$_REQUEST['maxrows'])
+	{
+		//For showing range of displayed records.
+		if($totalRecs <= 0)
+			$startNo = 0;
+		else
+			$startNo = $_REQUEST['pageNo']*$_REQUEST['maxrows']-$_REQUEST['maxrows']+1;
+		$endNo = $totalRecs;
+		$displayString = "Viewing $startNo to $endNo of $endNo Brands";
+		
+	}
+	else
+	{
+		//For showing range of displayed records.
+		if($totalRecs <= 0)
+			$startNo = 0;
+		else
+			$startNo = $_REQUEST['pageNo']*$_REQUEST['maxrows']-$_REQUEST['maxrows']+1;
+		$endNo = $_REQUEST['pageNo']*$_REQUEST['maxrows'];
+		$displayString = "Viewing $startNo to $endNo of $totalRecs testimonials";
+		
+	}
+	//Pagin 
+	
+	$noOfPage = @ceil($totalRecs/$_REQUEST['maxrows']); 
+	if($_REQUEST['pageNo'] == 1){
+		$prev = 1;
+	}
+	else
+		$prev = $_REQUEST['pageNo']-1;
+	if($_REQUEST['pageNo'] == $noOfPage){
+		$next = $_REQUEST['pageNo'];
+	}
+	else
+		$next = $_REQUEST['pageNo']+1;
+	
+	
+		
+?>
+<HTML><HEAD><TITLE><?=$admin_title?></TITLE>
+<? include_once('metadata.php');?>
+<BODY class="bodyStyle">
+<table cellSpacing=0 cellPadding=0 width="779" align="center" border="1px" bordercolor="#E6E6E6"> 
+  <tr>
+    <td vAlign=top align=left bgColor=#ffffff><? include("header.php");?></td>
+  </tr>
+  <tr height="5">
+    <td vAlign=top align=left class="topBarColor">&nbsp;</td>
+  </tr>
+  <tr>
+    <td vAlign="top" align="left" height="340"> 
+      <table cellSpacing=0 cellPadding=0 width="100%" border=0 class="middleTableBg">
+        <tr> 
+          <td vAlign=top align=left width="175" rowSpan="2" > 
+            <table cellSpacing="0" cellPadding="0" width="175" border=0>
+              <tr> 
+                <td valign="top">
+				 <table cellSpacing=0 cellPadding=2 width=175 border=0>
+                    <TBODY> 
+                    <tr valign="top"> 
+                      <td valign="top"><? include ('leftmenu.php');?></td>
+                    </tr>
+                    
+                    </TBODY> 
+                  </table>
+				</td>
+              </tr>
+            </table>
+          </td>
+          <td vAlign=top align=left width=0></td>
+         
+        </tr>
+        <tr> 
+          <td valign="top" width="1067"><!---Contents Start Here----->
+		  
+		  
+            <table cellSpacing=0 cellPadding=0 width="100%" align=center border=0>
+              <tr> 
+                <td class=smalltext width="98%" valign="top">
+				
+				  <table width="75%" border="0" align="center" cellpadding="0" cellspacing="0">
+<tr> 
+                <td width="10" height="9"><img src="images/top_left.jpg" width="9" height="9"></td>
+                <td width="543" height="9" background="images/top_mdl.jpg"><img src="images/top_mdl.jpg" width="9" height="9"></td>
+                <td width="11" height="9"><img src="images/top_right.jpg" width="9" height="9"></td>
+              </tr>
+              <tr> 
+                <td background="images/side1.jpg"><img src="images/side1.jpg" width="9" height="9"></td>
+                <td valign="top"> 
+				
+				
+				
+				<table cellSpacing=0 cellPadding=0 border=0 align="center">
+                    <tr> 
+                      <td vAlign=top width=564 bgColor=white> 
+                       
+			   <form name="frmfaqs" action="list_brands.php" method="post">
+                        
+				  <table class="paragraph2" cellspacing=0 cellpadding=0 width=553 border=0>
+				  <tr>
+						<td height="50" align="center" valign="bottom" class="sectionHeading"><?=$heading;?></td>
+					</tr>
+					<?php if($confMsg != ""){?>
+					<tr> <td align="center" class="successAlert"><?=$confMsg?></td> </tr>
+					<?php }
+						if($errorMsg != ""){
+					?>
+					<tr>
+						<td align="center"  class="successAlert"><?=$errorMsg?></td>
+					</tr>
+					<?php } ?>
+					<tr> 
+					<td align="left">
+				   		<table height="50"  width="100%"class="topActions"><tr>
+						<?  if($objGen->_output($_REQUEST['keyword'])){ ?>
+							<td valign="middle" width="50"><a href="list_brands.php?maxrows=<?=$_REQUEST['maxrows']?>"><img src="images/list.gif" alt="Listing Record">&nbsp;List </a></td>
+						<? }else{ ?>
+							<td valign="middle" width="50" class="noneAnchor"><img src="images/list.gif" alt="Listing Record">&nbsp;List </td>
+						<? } ?>
+						<td valign="middle" width="50"><a href="addedit_brand.php?action=add&pageNo=<?=$_REQUEST['pageNo']?>&maxrows=<?=$_REQUEST['maxrows']?>&langId=<?=$lanId;?>&keyword=<?=$objGen->_output(stripslashes($_REQUEST['keyword']))?>"><img src="images/add.gif" border="0" alt="Add Record">&nbsp;Add   </a></td>
+						<td valign="middle" class="extraLabels"  align="right">Keyword&nbsp;<input name="keyword" type="text" size="30" value="<?=$objGen->_output(stripslashes($_REQUEST['keyword']));?>">&nbsp;<input type="button" name="search" onClick="javascript:this.form.submit();" value="Search"></td>
+						</tr></table>
+					</td>
+					</tr>
+					
+				  </table>
+                     <table  cellspacing=0 cellpadding=0 width="553" border=0 class="topColor">
+                      <tbody>
+	    			    	<tr> 
+					   <td width="204" valign=top class="paragraph2"><?=$displayString?>
+					   </td>
+							
+						
+					   <td width="166" valign=top class="paragraph2"><!--Language:
+                         <select name="langId" class="paragraph" onChange="this.form.submit()">
+                           <?/*
+									$string = "";
+									while (list ($key, $val) = each ($languageArray)) {
+											$string .= "<option value={$key}";
+											if($key == $lanId){
+												$string .= " selected";
+											}
+											$string	.= ">{$val}</option>";
+   									}
+									echo $string;*/
+								?>
+                         </select>--></td>
+					   <td width="183" align=right class="paragraph2"><?=$heading;?> per page: 
+			
+						<select class="paragraph"  size=1 onChange="this.form.submit()" name="maxrows">
+						<? foreach($siteRowListConfig as $key=>$data){ ?>
+						  <option value="<?=$key?>" <? if($_REQUEST['maxrows']==$key) echo"selected"; ?>><?=$data;?></option>
+						 <? } ?>
+						</select>
+					</td>
+				    </tr>	    
+                                </tbody>
+                              </table>
+				  <table class="listTableStyle" cellSpacing=1 cellPadding=2 width="553">
+				   <TBODY> 
+					   <tr class="tableHeaderColor">
+						<td width="4%" align="center" >#</td>
+						<td width="25%" >Brand Name
+						
+						<a href="list_brands.php?field=brand_name&type=asc&langId=<?=$lanId?>&maxrows=<?=$_REQUEST['maxrows']?>&pageNo=<?=$_REQUEST['pageNo']?>&keyword=<?=$objGen->_output(stripslashes($_REQUEST['keyword']))?>"><img src="images/up.gif" border="0" alt="Ascending Sort">&nbsp;</a>
+						<a href="list_brands.php?field=brand_name&type=desc&langId=<?=$lanId?>&maxrows=<?=$_REQUEST['maxrows']?>&pageNo=<?=$_REQUEST['pageNo']?>&keyword=<?=$objGen->_output(stripslashes($_REQUEST['keyword']))?>"><img src="images/down.gif" border="0" alt="Descending Sort"></a>						</td>
+						<td width="15%" align="center" >URL</td>
+						<td width="17%" align="center" >E-mail</td>
+						<td width="8%" align="center" >Status</td>
+						<td width="16%" align="center" >Action</td>
+						<td width="15%" align="center" >Programs</td>
+					  </tr>
+					  <?php if($errMsg != ""){?>
+						  <tr class="listingTable"> 
+							<td align="center" colspan="7" ><font color="#FF0000"><?=$errMsg?></font> 
+							</td>
+						  </tr>
+					 <?php }
+					   	
+					   	$count = $startNo;
+						foreach($result as $row){
+							
+						?>
+						    <tr class="listingTable">
+						    	<td align="center"><?=$count?></td>
+							<td><?=stripslashes(stripslashes(stripslashes($row['brand_name'])));?></td>
+							<td><?=stripslashes(stripslashes(stripslashes($row['brand_url'])));?></td>
+							<td><?=stripslashes(stripslashes(stripslashes($row['brand_email'])));?></td>
+							
+							<td align="center"><?php if($row['brand_status'] == 1) echo "<img src=\"images/y.gif\" width=\"14\" height=\"14\">"; else echo "<img src=\"images/n.gif\" width=\"14\" height=\"14\">";?></td>
+							<td align="center">
+								<a href = "addedit_brand.php?masterId=<?=$row['brand_master_id']?>&pageNo=<?=$_REQUEST['pageNo']?>&langId=<?=$lanId?>&maxrows=<?=$_REQUEST['maxrows']?>&field=<?=$_REQUEST['field']?>&type=<?=$_REQUEST['type']?>&keyword=<?=$objGen->_output(stripslashes($_REQUEST['keyword']))?>&action=edit" class="smallLink">Edit</a>&nbsp;
+								|
+								<a href = "list_brands.php?masterId=<?=$row['brand_master_id']?>&pageNo=<?=$_REQUEST['pageNo']?>&langId=<?=$lanId?>&maxrows=<?=$_REQUEST['maxrows']?>&keyword=<?=$objGen->_output(stripslashes($_REQUEST['keyword']))?>&action=delete" class="smallLink" onClick="return confirm('Are you sure that you want to delete the selected Record? If yes click Ok, if not click Cancel.')">Delete</a></td> 
+								<td><a title="Click here for Program Assignment" href="program_assign.php?masterId=<?=$row['brand_master_id']?>&pageNo=<?=$_REQUEST['pageNo']?>&langId=<?=$lanId?>&maxrows=<?=$_REQUEST['maxrows']?>&field=<?=$_REQUEST['field']?>&type=<?=$_REQUEST['type']?>&keyword=<?=$objGen->_output(stripslashes($_REQUEST['keyword']))?>">Programs</a></td>
+						    </tr>
+						<?php
+						$count++;
+						}
+						?>
+					</tbody>
+			 	</table>
+				<?php if($noOfPage > 1) { ?>
+				<table cellspacing=0 cellpadding=0 width=553 border=0 class="topColor">
+                                <tbody>		
+					<tr>
+						<td align="left" colspan = "6" class="leftmenu">
+						<a href="list_brands.php?pageNo=1&type=<?=$_REQUEST['type']?>&langId=<?=$lanId?>&maxrows=<?=$_REQUEST['maxrows']?>&field=<?=$_REQUEST['field']?>&keyword=<?=$objGen->_output(stripslashes($_REQUEST['keyword']))?>">
+						<img src="images/mail-arrowfg.gif" border=0 width="20" height="20" align="absmiddle" alt="First Page"></a>
+						<a href="list_brands.php?pageNo=<?=$prev?>&type=<?=$_REQUEST['type']?>&langId=<?=$lanId?>&maxrows=<?=$_REQUEST['maxrows']?>&field=<?=$_REQUEST['field']?>&keyword=<?=$objGen->_output(stripslashes($_REQUEST['keyword']))?>">
+						<img src="images/mail-arrowlg.gif" border=0 width="20" height="20" align="absmiddle" alt="Previous Page"></a>[Page 
+						<select name="pageNo" class="paragraph"  onChange="form.submit()">
+							<?php
+							if($noOfPage){
+								for($i = 1; $i <= $noOfPage; $i++){
+							?>
+								<option value="<?=$i?>" <? if($i==$_REQUEST['pageNo']) echo "selected";?>><?=$i?></option>
+							<?php
+								}
+							}
+							else{
+								echo "<option value=\"\">0</option>";
+							}
+							?>
+						</select>
+							 of <?=$noOfPage?>]
+							 <a href="list_brands.php?pageNo=<?=$next?>&type=<?=$_REQUEST['type']?>&langId=<?=$lanId?>&field=<?=$_REQUEST['field']?>&maxrows=<?=$_REQUEST['maxrows']?>&keyword=<?=$objGen->_output(stripslashes($_REQUEST['keyword']))?>">
+							<img src="images/mail-arrowrg.gif" border=0 width="20" height="20" align="absmiddle" alt="Next Page"></a>
+							<a href="list_brands.php?pageNo=<?=$noOfPage?>&type=<?=$_REQUEST['type']?>&langId=<?=$lanId?>&maxrows=<?=$_REQUEST['maxrows']?>&field=<?=$_REQUEST['field']?>&keyword=<?=$objGen->_output(stripslashes($_REQUEST['keyword']))?>">
+							<img src="images/mail-arrowlastg.gif" border=0 width="20" height="20" align="absmiddle" alt="Last Page"></a>
+						</td>
+					</tr>                    	
+				   </tbody>
+			 	</table>
+				<?php }?>
+				<input type="hidden" name="type" value="<?=$_REQUEST['type']?>">
+				<input type="hidden" name="field" value="<?=$_REQUEST['field']?>">
+				</form>
+                      </td>
+                    </tr>
+                  </table>  
+				  </td>
+                <td background="images/side2.jpg">&nbsp;</td>
+              </tr>
+              <tr> 
+                <td width="10" height="9"><img src="images/btm_left.jpg" width="9" height="9"></td>
+                <td height="9" background="images/btm_mdl.jpg"><img src="images/btm_mdl.jpg" width="9" height="9"></td>
+                <td width="11" height="9"><img src="images/btm_right.jpg" width="9" height="9"></td>
+              </tr>
+            </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+		 <tr height="2">
+    <td vAlign=top align=left class="topBarColor" colspan="3">&nbsp;</td>
+  </tr>
+      </table>
+        <?php include_once("footer.php");?>
+</td></tr></table>		
+</body>
+</html>

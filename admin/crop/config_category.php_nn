@@ -1,0 +1,98 @@
+<?php
+/*********************
+ * Cropping Tool v1.0
+ * Author: Deepak
+ * Date: 06/08/2015
+ *********************/
+
+/*
+ * Path to original image (Directory)
+ * Trailing slash required
+ */
+define('IMAGE_PATH', 'assets/img/');
+
+/* 
+ * Upload directory for cropped images (should have 777 permission) 
+ * Trailing slash required *
+ */
+define('UPLOAD_PATH', 'uploads_category/');
+
+// Image resolutions for cropping
+$IMAGE_RESOLUTIONS =
+	array(
+		array(
+			'name'  => 'Square 1024x1024',
+			'width' => '1024',
+			'height'=> '1024'
+			),
+			array(
+			'name'  => 'MAC 1680x1050',
+			'width' => '1680',
+			'height'=> '1050'
+			),	
+			array(
+			'name'  => ' 1242 x 2208',
+			'width' => '1242',
+			'height'=> '2208'
+			),	
+		array(
+			'name'  => 'iPhone (6+) 1080 x 1920',
+			'width' => '1080',
+			'height'=> '1920'
+			),	
+			array(
+			'name'  => 'iPhone (6) 750 x 1134',
+			'width' => '750',
+			'height'=> '1134'
+			),	
+			array(
+			'name'  => 'iPhone (5) 640 x 1136',
+			'width' => '640',
+			'height'=> '1136'
+			),	
+			array(
+			'name'  => 'iPhone (5) 640 x 1136',
+			'width' => '640',
+			'height'=> '1136'
+			),
+			array(
+			'name'  => 'iPhone (4) 640 x 960 ',
+			'width' => '640',
+			'height'=> '960'
+			),
+			array(
+			'name'  => 'iPad: 1024 x 768 (Landscape)',
+			'width' => '1024',
+			'height'=> '768'
+			),
+			array(
+			'name'  => 'iPad: 768 x 1024 (Portrait) ',
+			'width' => '768',
+			'height'=> '1024'
+			),
+			array(
+			'name'  => 'Android 800 X 1280 ',
+			'width' => '800',
+			'height'=> '1280'
+			),		
+			array(
+			'name'  => 'Android 720 X 1280 ',
+			'width' => '720',
+			'height'=> '1280'
+			),
+			array(
+			'name'  => 'Android 600 x 1024 ',
+			'width' => '600',
+			'height'=> '1024'
+			),
+			array(
+			'name'  => 'Android 480 x 800 ',
+			'width' => '480',
+			'height'=> '800'
+			),
+		array(
+			'name'  => 'Android/iPhone 320 x 480',
+			'width' => '320',
+			'height'=> '480'
+			)
+		);

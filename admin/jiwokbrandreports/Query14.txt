@@ -1,0 +1,20 @@
+SELECT camp_name AS Brand,count(a.user_id) as count
+FROM `campaign_reports` cr
+LEFT JOIN campaign_manage cn ON cr.jiwok_code = cn.camp_id
+left join user_master_ext a on a.user_id=cr.user_id
+left join countries d on a .user_country=d.countries_id
+where cr.status=1 and cr.user_id is not null
+and cr.date >= '%3$s-%2$s-%1$s'
+AND cr.date <= '%6$s-%5$s-%4$s'
+%7$s
+%8$s
+%9$s
+%10$s
+%11$s
+%12$s
+%13$s
+%14$s
+%15$s
+%16$s
+%17$s
+group by cn.id

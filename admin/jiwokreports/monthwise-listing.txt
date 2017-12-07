@@ -1,0 +1,38 @@
+select a.mon, a.Default, b.1ED, c.GC, d.FWT, e.FP
+from 
+(select date_format(user_doj,'%y%m' ) as mon, count(*) as 'Default' from user_master_ext
+where origin = 0
+group by mon
+)a
+,
+(
+select date_format(user_doj,'%y%m' ) as mon,  count(*) as '1ED' from user_master_ext
+where origin = 1
+group by mon
+)b
+,
+(
+select date_format(user_doj,'%y%m' ) as mon, count(*) as 'GC' from user_master_ext
+where origin = 2
+group by mon
+)c
+,
+(
+select date_format(user_doj,'%y%m' ) as mon, count(*) as 'FWT' from user_master_ext
+where origin = 3
+group by mon
+)d
+,
+(
+select date_format(user_doj,'%y%m' ) as mon, count(*) as 'FP' from user_master_ext
+where origin = 4
+group by mon
+)
+e
+
+where 
+a.mon = b.mon 
+and a.mon = c.mon
+and a.mon = d.mon
+and a.mon = e.mon
+order by mon
